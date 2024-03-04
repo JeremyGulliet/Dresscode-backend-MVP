@@ -3,3 +3,5 @@ const brandSchema = mongoose.Schema({
 });
 
 const Brand = mongoose.model("brands", brandSchema);
+
+module.exports = Brand;

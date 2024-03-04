@@ -8,3 +8,5 @@ const articleSchema = mongoose.Schema({
 });
 
 const Article = mongoose.model("articles", articleSchema);
+
+module.exports = Article;

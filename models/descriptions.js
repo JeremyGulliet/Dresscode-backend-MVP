@@ -7,3 +7,5 @@ const descriptionSchema = mongoose.Schema({
 });
 
 const Description = mongoose.model("descriptions", descriptionSchema);
+
+module.exports = Description;
