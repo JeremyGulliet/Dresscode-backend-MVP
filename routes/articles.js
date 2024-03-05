@@ -14,21 +14,23 @@ router.get("/", function (req, res, next) {
 
 /* POST upload photo prise par l'utilisateur  */
 router.post("/upload", async (req, res) => {
-  // console.log(req.files.photoFromFront);
-  // const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  console.log(req.files.photoFromFront);
 
-  const photoPath = `./tmp/${uniqid().jpg}`;
+
+  const photoPath = `./tmp/${uniqid()}.jpg`;
+  console.log(photoPath)
   const resultMove = await req.files.photoFromFront.mv(photoPath);
 
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
+
+    fs.unlinkSync(photoPath);
 
     res.json({ result: true, url: resultCloudinary.secure_url });
   } else {
     res.json({ result: false, error: resultMove });
   }
 
-  fs.unlinkSync(photoPath);
 });
 
 /* POST description saisie par l'utilisateur (+url récupérée de cloudinary) */

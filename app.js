@@ -10,7 +10,10 @@ var logger = require("morgan");
 var usersRouter = require("./routes/users");
 var articlesRouter = require("./routes/articles");
 
+
 var app = express();
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
 
 app.use(logger("dev"));
 app.use(express.json());
