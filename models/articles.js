@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const articleSchema = mongoose.Schema({
   weather: { type: mongoose.Schema.Types.ObjectId, ref: "weathers" },
   useDate: Date,
