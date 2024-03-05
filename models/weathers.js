@@ -6,6 +6,6 @@ const weatherSchema = mongoose.Schema({
   temp_max: Number,
 });
 
-const weather = mongoose.model("weathers", weatherSchema);
+const Weather = mongoose.model("weathers", weatherSchema);
 
 module.exports = Weather;
