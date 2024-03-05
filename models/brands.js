@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const brandSchema = mongoose.Schema({
-  name: null || String,
+  name: String,
 });
 
 const Brand = mongoose.model("brands", brandSchema);
