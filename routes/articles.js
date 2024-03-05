@@ -15,7 +15,7 @@ router.get("/", function (req, res, next) {
 /* POST upload photo prise par l'utilisateur  */
 router.post("/upload", async (req, res) => {
   // console.log(req.files.photoFromFront);
-  const cloudinaryUrl = process.env.CLOUDINARY_URL;
+  // const cloudinaryUrl = process.env.CLOUDINARY_URL;
 
   const photoPath = `./tmp/${uniqid().jpg}`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
