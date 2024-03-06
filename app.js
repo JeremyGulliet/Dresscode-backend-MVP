@@ -12,11 +12,7 @@ var articlesRouter = require("./routes/articles");
 var brandsRouter = require("./routes/brands");
 var weathersRouter = require("./routes/weathers");
 
-
 var app = express();
-const fileUpload = require('express-fileupload');
-app.use(fileUpload());
-
 const fileUpload = require("express-fileupload");
 app.use(fileUpload());
 
