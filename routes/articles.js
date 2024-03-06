@@ -56,7 +56,7 @@ router.post("/", (req, res) => {
 
 // Route pour récupérer un haut aléatoire
 router.get("/random/tops", (req, res) => {
-  Article.findOne({ weather: 'Soleil' })
+  Article.findOne({ favorite: 'true' })
     .then(top => {
       res.json({ imageUrl: top.url_image });
     })
@@ -65,8 +65,9 @@ router.get("/random/tops", (req, res) => {
 
 // Route pour récupérer un bas aléatoire
 router.get("/random/bottoms", (req, res) => {
-  Article.findOne({ weather: 'Soleil' })
+  Article.findOne({ favorite: 'true' })
     .then(bottom => {
+      //console.log(bottom)
       res.json({ imageUrl: bottom.url_image });
     })
     .catch(error => console.error(error));
