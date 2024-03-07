@@ -14,14 +14,8 @@ var weathersRouter = require("./routes/weathers");
 var descriptionsRouter = require("./routes/descriptions");
 
 var app = express();
-<<<<<<< HEAD
 const fileUpload = require("express-fileupload");
 app.use(fileUpload());
-=======
-const fileUpload = require('express-fileupload');
-app.use(fileUpload());
-
->>>>>>> main
 
 app.use(logger("dev"));
 app.use(express.json());
