@@ -11,10 +11,17 @@ var usersRouter = require("./routes/users");
 var articlesRouter = require("./routes/articles");
 var brandsRouter = require("./routes/brands");
 var weathersRouter = require("./routes/weathers");
+var descriptionsRouter = require("./routes/descriptions");
 
 var app = express();
+<<<<<<< HEAD
 const fileUpload = require("express-fileupload");
 app.use(fileUpload());
+=======
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
+
+>>>>>>> main
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -27,5 +34,6 @@ app.use("/users", usersRouter);
 app.use("/articles", articlesRouter);
 app.use("/brands", brandsRouter);
 app.use("/weathers", weathersRouter);
+app.use("/descriptions", descriptionsRouter);
 
 module.exports = app;

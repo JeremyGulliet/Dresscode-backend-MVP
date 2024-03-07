@@ -33,24 +33,6 @@ router.post("/upload", async (req, res) => {
 
 });
 
-/* POST description saisie par l'utilisateur (+url récupérée de cloudinary) */
-router.post("/descriptions", (req, res) => {
-  const { type, category, size, color, event } = req.body;
-  const newDescription = new Description({
-    type,
-    category,
-    size,
-    color,
-    event,
-  });
-  newDescription
-    .save()
-    .then((savedDescription) => {
-      res.json({ result: true, newDescription: savedDescription });
-    })
-    .catch((error) => console.error(error));
-});
-
 /* POST article complet (photo > url) */
 
 router.post("/", (req, res) => {
@@ -70,6 +52,25 @@ router.post("/", (req, res) => {
       res.json({ result: true, newArticle: savedArticle });
     })
     .catch((error) => console.error(error));
+});
+
+// Route pour récupérer un haut aléatoire
+router.get("/random/tops", (req, res) => {
+  Article.findOne({ favorite: 'true' })
+    .then(top => {
+      res.json({ imageUrl: top.url_image });
+    })
+    .catch(error => console.error(error));
+});
+
+// Route pour récupérer un bas aléatoire
+router.get("/random/bottoms", (req, res) => {
+  Article.findOne({ favorite: 'true' })
+    .then(bottom => {
+      //console.log(bottom)
+      res.json({ imageUrl: bottom.url_image });
+    })
+    .catch(error => console.error(error));
 });
 
 module.exports = router;
