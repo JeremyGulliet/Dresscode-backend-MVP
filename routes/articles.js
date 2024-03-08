@@ -1,15 +1,15 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-const Description = require('../models/descriptions');
-const Article = require('../models/articles');
+const Description = require("../models/descriptions");
+const Article = require("../models/articles");
 
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
 const fs = require("fs");
 
 /* POST upload photo prise par l'utilisateur  */
-router.post('/upload', async (req, res) => {
+router.post("/upload", async (req, res) => {
   // console.log(req.files.photoFromFront);
 
   const photoPath = `./tmp/${uniqid()}.jpg`;
@@ -29,7 +29,7 @@ router.post('/upload', async (req, res) => {
 
 /* POST article complet (photo > url) */
 
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   const { weather, useDate, favorite, url_image, description, brand } =
     req.body;
   const newArticle = new Article({
@@ -49,8 +49,8 @@ router.post('/', (req, res) => {
 });
 
 // Route pour récupérer un haut aléatoire
-router.get('/random/tops', (req, res) => {
-  Article.findOne({ favorite: 'false' })
+router.get("/random/tops", (req, res) => {
+  Article.findOne({ favorite: "false" })
     .then((top) => {
       res.json({ imageUrl: top.url_image });
     })
@@ -58,8 +58,8 @@ router.get('/random/tops', (req, res) => {
 });
 
 // Route pour récupérer un bas aléatoire
-router.get('/random/bottoms', (req, res) => {
-  Article.findOne({ favorite: 'true' })
+router.get("/random/bottoms", (req, res) => {
+  Article.findOne({ favorite: "true" })
     .then((bottom) => {
       //console.log(bottom)
       res.json({ imageUrl: bottom.url_image });
@@ -69,7 +69,7 @@ router.get('/random/bottoms', (req, res) => {
 
 // Route POST pour envoyer les photos importées de la photothèque vers Cloudinary
 
-router.post('/import', async (req, res) => {
+router.post("/import", async (req, res) => {
   const file = req.files.photoFromFront; // Obtenir le fichier envoyé dans la requête
   if (!file) {
     return res.status(400).json({ error: "Aucun fichier n'a été envoyé." });
@@ -96,7 +96,7 @@ router.post('/import', async (req, res) => {
 
 // Route DELETE pour suppression Cloudinary
 
-router.delete('/deleteImage', async (req, res) => {
+router.delete("/deleteImage", async (req, res) => {
   const { imageUrl } = req.body;
 
   // Supprimer l'image de Cloudinary en utilisant l'URL imageUrl
@@ -108,20 +108,16 @@ router.delete('/deleteImage', async (req, res) => {
       );
       res.sendStatus(500); // Envoyer une réponse d'erreur au frontend
     } else {
-      console.log('Image supprimée de Cloudinary avec succès:', result);
+      console.log("Image supprimée de Cloudinary avec succès:", result);
       res.sendStatus(200); // Envoyer une réponse OK au frontend
     }
   });
 });
 
 // Route GET pour afficher les hauts dans dressing
-router.get('/dressing/hauts', (req, res) => {
+router.get("/dressing/hauts", (req, res) => {
   Article.find({})
-    .populate({
-      path: 'description',
-      match: { type: 'haut' },
-      model: Description,
-    })
+    .populate("description")
     .then((hauts) => {
       res.json(hauts);
     })
@@ -131,14 +127,9 @@ router.get('/dressing/hauts', (req, res) => {
 });
 
 // Route GET pour afficher les bas dans dressing
-router.get('/dressing/bas', (req, res) => {
+router.get("/dressing/bas", (req, res) => {
   Article.find({})
-    .populate({
-      path: 'description',
-      match: { type: 'bas' },
-      model: Description,
-
-    })
+    .populate("description")
     .then((bas) => {
       res.json(bas);
     })
