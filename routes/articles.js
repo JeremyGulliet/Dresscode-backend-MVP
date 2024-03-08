@@ -48,25 +48,6 @@ router.post("/", (req, res) => {
     .catch((error) => console.error(error));
 });
 
-// Route pour récupérer un haut aléatoire
-router.get("/random/tops", (req, res) => {
-  Article.findOne({ favorite: "false" })
-    .then((top) => {
-      res.json({ imageUrl: top.url_image });
-    })
-    .catch((error) => console.error(error));
-});
-
-// Route pour récupérer un bas aléatoire
-router.get("/random/bottoms", (req, res) => {
-  Article.findOne({ favorite: "true" })
-    .then((bottom) => {
-      //console.log(bottom)
-      res.json({ imageUrl: bottom.url_image });
-    })
-    .catch((error) => console.error(error));
-});
-
 // Route POST pour envoyer les photos importées de la photothèque vers Cloudinary
 
 router.post("/import", async (req, res) => {
@@ -128,6 +109,27 @@ router.get("/dressing/hauts", (req, res) => {
 
 // Route GET pour afficher les bas dans dressing
 router.get("/dressing/bas", (req, res) => {
+  Article.find({})
+    .populate("description")
+    .then((bas) => {
+      res.json(bas);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+});
+
+// Route pour récupérer un haut aléatoire
+router.get("/random/tops", (req, res) => {
+  Article.findOne({ favorite: "false" })
+    .then((top) => {
+      res.json({ imageUrl: top.url_image });
+    })
+    .catch((error) => console.error(error));
+});
+
+// Route pour récupérer un bas aléatoire
+router.get("/random/bottoms", (req, res) => {
   Article.find({})
     .populate("description")
     .then((bas) => {
