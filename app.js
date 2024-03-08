@@ -32,4 +32,9 @@ app.use('/descriptions', descriptionsRouter);
 app.use('/dressing/hauts', articlesRouter); // Monter les routes des hauts
 app.use('/dressing/bas', articlesRouter); // Monter les routes des bas
 
+const port = 3000; // Port à écouter
+app.listen(port, () => {
+  console.log(`🟢 Ecoute sur le port ${port}`);
+});
+
 module.exports = app;
