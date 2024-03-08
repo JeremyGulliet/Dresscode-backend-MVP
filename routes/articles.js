@@ -119,24 +119,15 @@ router.get("/dressing/bas", (req, res) => {
     });
 });
 
-// Route pour récupérer un haut aléatoire
-router.get("/random/tops", (req, res) => {
-  Article.findOne({ favorite: "false" })
-    .then((top) => {
-      res.json({ imageUrl: top.url_image });
-    })
-    .catch((error) => console.error(error));
-});
+router.get('/:favorite', async (req, res) => {
+  const { favorite } = req.params; // Utilisez req.params pour obtenir les paramètres de l'URL
 
-// Route pour récupérer un bas aléatoire
-router.get("/random/bottoms", (req, res) => {
-  Article.find({})
-    .populate("description")
-    .then((bas) => {
-      res.json(bas);
-    })
-    .catch((err) => {
-      console.error(err);
+  // Récupération des articles selon la requête spécifiée
+  Article.find({ favorite: true })
+    .then(articles => res.json(articles))
+    .catch(error => {
+      console.error('Erreur lors de la récupération des articles :', error);
+      res.status(500).json({ message: 'Erreur serveur' });
     });
 });
 
