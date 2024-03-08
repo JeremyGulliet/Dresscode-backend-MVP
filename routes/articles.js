@@ -1,8 +1,8 @@
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 
-const Description = require("../models/descriptions");
-const Article = require("../models/articles");
+const Description = require('../models/descriptions');
+const Article = require('../models/articles');
 
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
@@ -108,6 +108,37 @@ router.delete('/deleteImage', async (req, res) => {
       res.sendStatus(200); // Envoyer une réponse OK au frontend
     }
   });
+});
+
+// Route GET pour afficher les hauts dans dressing
+router.get('/dressing/hauts', (req, res) => {
+  Article.find({})
+    .populate({
+      path: 'description',
+      match: { type: 'haut' },
+      model: Description,
+    })
+    .then((hauts) => {
+      res.json(hauts);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+});
+
+// Route GET pour afficher les bas dans dressing
+router.get('/dressing/bas', (req, res) => {
+  Article.find({})
+    .populate({
+      path: 'description',
+      match: { type: 'bas' },
+    })
+    .then((bas) => {
+      res.json(bas);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 });
 
 module.exports = router;
