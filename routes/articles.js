@@ -132,7 +132,7 @@ router.get('/dressing/hauts', (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-    });
+    }); 
 });
 
 // Route GET pour afficher les bas dans dressing
