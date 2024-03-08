@@ -8,11 +8,6 @@ const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
 const fs = require("fs");
 
-/* GET articles */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
-
 /* POST upload photo prise par l'utilisateur  */
 router.post("/upload", async (req, res) => {
   // console.log(req.files.photoFromFront);
