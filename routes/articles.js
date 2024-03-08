@@ -132,6 +132,8 @@ router.get('/dressing/bas', (req, res) => {
     .populate({
       path: 'description',
       match: { type: 'bas' },
+      model: Description,
+
     })
     .then((bas) => {
       res.json(bas);
