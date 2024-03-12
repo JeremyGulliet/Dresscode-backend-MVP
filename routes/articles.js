@@ -1,9 +1,10 @@
 var express = require("express");
+var express = require("express");
 var router = express.Router();
 
 const Description = require("../models/descriptions");
 const Article = require("../models/articles");
-const Weather = require("../models/weathers")
+const Weather = require("../models/weathers");
 
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
@@ -30,6 +31,7 @@ router.post("/upload", async (req, res) => {
 
 /* POST article complet (photo > url) */
 
+router.post("/", (req, res) => {
 router.post("/", (req, res) => {
   const { weather, useDate, favorite, url_image, description, brand } =
     req.body;
@@ -98,7 +100,12 @@ router.delete("/deleteImage", async (req, res) => {
 
 // Route GET pour afficher les articles dans le dressing
 router.get("/dressing", (req, res) => {
+// Route GET pour afficher les articles dans le dressing
+router.get("/dressing", (req, res) => {
   Article.find({})
+    .populate("description")
+    .then((articles) => {
+      res.json(articles);
     .populate("description")
     .then((articles) => {
       res.json(articles);
@@ -108,15 +115,15 @@ router.get("/dressing", (req, res) => {
     });
 });
 
-router.get('/:favorite', async (req, res) => {
+router.get("/:favorite", async (req, res) => {
   const { favorite } = req.params; // Utilisez req.params pour obtenir les paramètres de l'URL
 
   // Récupération des articles selon la requête spécifiée
   Article.find({ favorite: true })
-    .then(articles => res.json(articles))
-    .catch(error => {
-      console.error('Erreur lors de la récupération des articles :', error);
-      res.status(500).json({ message: 'Erreur serveur' });
+    .then((articles) => res.json(articles))
+    .catch((error) => {
+      console.error("Erreur lors de la récupération des articles :", error);
+      res.status(500).json({ message: "Erreur serveur" });
     });
 });
 
@@ -136,7 +143,7 @@ router.get("/dressing/homeArticle", async (req, res) => {
     const weather = await Weather.find(weatherFilter);
     if (weather && weather.length > 0) {
       // Récupérer les IDs des météos correspondantes
-      const weatherIds = weather.map(w => w._id);
+      const weatherIds = weather.map((w) => w._id);
       // Ajouter les IDs dans le filtre des articles
       articleFilter.weather = { $in: weatherIds };
     }
@@ -148,7 +155,7 @@ router.get("/dressing/homeArticle", async (req, res) => {
     const descriptions = await Description.find(descriptionFilter);
     if (descriptions && descriptions.length > 0) {
       // Récupérer les IDs des descriptions correspondantes
-      const descriptionIds = descriptions.map(d => d._id);
+      const descriptionIds = descriptions.map((d) => d._id);
       // Ajouter les IDs dans le filtre des articles
       articleFilter.description = { $in: descriptionIds };
     }
@@ -159,13 +166,17 @@ router.get("/dressing/homeArticle", async (req, res) => {
     const articles = await Article.find(articleFilter);
 
     if (articles.length === 0) {
-      return res.status(404).json({ message: "Aucun article trouvé avec ces critères de recherche" });
+      return res
+        .status(404)
+        .json({
+          message: "Aucun article trouvé avec ces critères de recherche",
+        });
     }
 
     res.json(articles);
   } catch (error) {
-    console.error('Erreur lors de la récupération des articles :', error);
-    res.status(500).json({ message: 'Erreur serveur' });
+    console.error("Erreur lors de la récupération des articles :", error);
+    res.status(500).json({ message: "Erreur serveur" });
   }
 });
 module.exports = router;
