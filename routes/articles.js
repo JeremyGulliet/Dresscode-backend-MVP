@@ -159,9 +159,11 @@ router.get("/dressing/homeArticle", async (req, res) => {
     const articles = await Article.find(articleFilter);
 
     if (articles.length === 0) {
-      return res.status(404).json({
-        message: "Aucun article trouvé avec ces critères de recherche",
-      });
+      return res
+        .status(404)
+        .json({
+          message: "Aucun article trouvé avec ces critères de recherche",
+        });
     }
 
     res.json(articles);
