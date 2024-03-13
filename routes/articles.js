@@ -31,25 +31,24 @@ router.post("/upload", async (req, res) => {
 
 /* POST article complet (photo > url) */
 
+
 router.post("/", (req, res) => {
-  router.post("/", (req, res) => {
-    const { weather, useDate, favorite, url_image, description, brand } =
-      req.body;
-    const newArticle = new Article({
-      weather,
-      useDate,
-      favorite,
-      url_image,
-      description,
-      brand,
-    });
-    newArticle
-      .save()
-      .then((savedArticle) => {
-        res.json({ result: true, newArticle: savedArticle });
-      })
-      .catch((error) => console.error(error));
-  })
+  const { weather, useDate, favorite, url_image, description, brand } =
+    req.body;
+  const newArticle = new Article({
+    weather,
+    useDate,
+    favorite,
+    url_image,
+    description,
+    brand,
+  });
+  newArticle
+    .save()
+    .then((savedArticle) => {
+      res.json({ result: true, newArticle: savedArticle });
+    })
+    .catch((error) => console.error(error));
 })
 
 // Route POST pour envoyer les photos importées de la photothèque vers Cloudinary
@@ -169,6 +168,7 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
         const descriptionIds = descriptions.map(d => d._id);
         // Ajouter les IDs dans le filtre des articles
         articleFilter.description = { $in: descriptionIds };
+
       }
     }
 
@@ -184,6 +184,8 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
     }
 
     res.json(articles);
+    console.log(articles)
+
   } catch (error) {
     console.error("Erreur lors de la récupération des articles :", error);
     res.status(500).json({ message: "Erreur serveur" });
