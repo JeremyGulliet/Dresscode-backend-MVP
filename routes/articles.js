@@ -5,6 +5,7 @@ const Description = require("../models/descriptions");
 const Article = require("../models/articles");
 const Weather = require("../models/weathers");
 const User = require("../models/users");
+const Brand = require("../models/brands");
 
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
@@ -76,26 +77,6 @@ router.post("/import", async (req, res) => {
       .status(500)
       .json({ error: "Erreur lors du téléchargement de l'image." });
   }
-});
-
-// Route DELETE pour suppression Cloudinary
-
-router.delete("/deleteImage", async (req, res) => {
-  const { imageUrl } = req.body;
-
-  // Supprimer l'image de Cloudinary en utilisant l'URL imageUrl
-  cloudinary.uploader.destroy(imageUrl, (error, result) => {
-    if (error) {
-      console.error(
-        "Erreur lors de la suppression de l'image de Cloudinary:",
-        error
-      );
-      res.sendStatus(500); // Envoyer une réponse d'erreur au frontend
-    } else {
-      console.log("Image supprimée de Cloudinary avec succès:", result);
-      res.sendStatus(200); // Envoyer une réponse OK au frontend
-    }
-  });
 });
 
 // Route GET pour afficher les articles de l'utilisateur dans le dressing
@@ -184,11 +165,13 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
     }
 
     res.json(articles);
-    console.log(articles)
+    //console.log(articles)
 
   } catch (error) {
     console.error("Erreur lors de la récupération des articles :", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
+
+
 module.exports = router;
