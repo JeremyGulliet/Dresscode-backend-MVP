@@ -180,7 +180,7 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
     }
 
     res.json(articles);
-    console.log(articles);
+    console.log("---------------ARTICLES--------------------", articles);
   } catch (error) {
     console.error("Erreur lors de la récupération des articles :", error);
     res.status(500).json({ message: "Erreur serveur" });
