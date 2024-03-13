@@ -4,6 +4,7 @@ var router = express.Router();
 const Description = require("../models/descriptions");
 const Article = require("../models/articles");
 const Weather = require("../models/weathers");
+const User = require("../models/users");
 
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
@@ -31,22 +32,24 @@ router.post("/upload", async (req, res) => {
 /* POST article complet (photo > url) */
 
 router.post("/", (req, res) => {
-  const { weather, useDate, favorite, url_image, description, brand } =
-    req.body;
-  const newArticle = new Article({
-    weather,
-    useDate,
-    favorite,
-    url_image,
-    description,
-    brand,
+  router.post("/", (req, res) => {
+    const { weather, useDate, favorite, url_image, description, brand } =
+      req.body;
+    const newArticle = new Article({
+      weather,
+      useDate,
+      favorite,
+      url_image,
+      description,
+      brand,
+    });
+    newArticle
+      .save()
+      .then((savedArticle) => {
+        res.json({ result: true, newArticle: savedArticle });
+      })
+      .catch((error) => console.error(error));
   });
-  newArticle
-    .save()
-    .then((savedArticle) => {
-      res.json({ result: true, newArticle: savedArticle });
-    })
-    .catch((error) => console.error(error));
 });
 
 // Route POST pour envoyer les photos importées de la photothèque vers Cloudinary
@@ -96,15 +99,22 @@ router.delete("/deleteImage", async (req, res) => {
   });
 });
 
-// Route GET pour afficher les articles dans le dressing
-router.get("/dressing", (req, res) => {
-  Article.find({})
-    .populate("description")
-    .then((articles) => {
-      res.json(articles);
+// Route GET pour afficher les articles de l'utilisateur dans le dressing
+router.get("/dressing/:token", (req, res) => {
+  User.findOne({ token: req.params.token })
+    .populate({
+      path: "articles", // Accéder au champ articles de l'utilisateur
+      populate: { path: "description" }, // Accéder au champ description des articles
+    })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send("Utilisateur non trouvé");
+      }
+      res.json(user.articles); // Renvoyer les articles associés à l'utilisateur avec leurs descriptions
     })
     .catch((err) => {
       console.error(err);
+      res.status(500).send("Erreur lors de la recherche de l'utilisateur");
     });
 });
 
@@ -121,49 +131,54 @@ router.get("/:favorite", async (req, res) => {
 });
 
 // Route GET pour afficher les articles selon la météo et la description
-router.get("/dressing/homeArticle", async (req, res) => {
+router.get("/dressing/homeArticle/:token", async (req, res) => {
+  const { token } = req.params;
   const { type, temp_min, temp_max, category } = req.query;
 
-  const articleFilter = {};
-
-  // Filtrer par météo si des paramètres de météo sont fournis
-  if (type || temp_min || temp_max) {
-    const weatherFilter = {};
-    if (type) weatherFilter.type = type;
-    if (temp_min) weatherFilter.temp_min = temp_min;
-    if (temp_max) weatherFilter.temp_max = temp_max;
-
-    const weather = await Weather.find(weatherFilter);
-    if (weather && weather.length > 0) {
-      // Récupérer les IDs des météos correspondantes
-      const weatherIds = weather.map((w) => w._id);
-      // Ajouter les IDs dans le filtre des articles
-      articleFilter.weather = { $in: weatherIds };
-    }
-  }
-
-  // Filtrer par description si la catégorie est fournie
-  if (category) {
-    const descriptionFilter = { category: category };
-    const descriptions = await Description.find(descriptionFilter);
-    if (descriptions && descriptions.length > 0) {
-      // Récupérer les IDs des descriptions correspondantes
-      const descriptionIds = descriptions.map((d) => d._id);
-      // Ajouter les IDs dans le filtre des articles
-      articleFilter.description = { $in: descriptionIds };
-    }
-  }
-
   try {
+    const user = await User.findOne({ token });
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+
+    const articleFilter = { _id: { $in: user.articles } }; // Filtre pour rechercher dans les articles de l'utilisateur
+
+    // Filtrer par météo si des paramètres de météo sont fournis
+    if (type || temp_min || temp_max) {
+      const weatherFilter = {};
+      if (type) weatherFilter.type = type;
+      if (temp_min) weatherFilter.temp_min = temp_min;
+      if (temp_max) weatherFilter.temp_max = temp_max;
+
+      const weather = await Weather.find(weatherFilter);
+      if (weather && weather.length > 0) {
+        // Récupérer les IDs des météos correspondantes
+        const weatherIds = weather.map((w) => w._id);
+        // Ajouter les IDs dans le filtre des articles
+        articleFilter.weather = { $in: weatherIds };
+      }
+    }
+
+    // Filtrer par description si la catégorie est fournie
+    if (category) {
+      const descriptionFilter = { category };
+      const descriptions = await Description.find(descriptionFilter);
+      if (descriptions && descriptions.length > 0) {
+        // Récupérer les IDs des descriptions correspondantes
+        const descriptionIds = descriptions.map((d) => d._id);
+        // Ajouter les IDs dans le filtre des articles
+        articleFilter.description = { $in: descriptionIds };
+      }
+    }
+
     // Effectuer la requête pour les articles en utilisant le filtre combiné
-    const articles = await Article.find(articleFilter);
+    const articles = await Article.find(articleFilter).populate("description");
 
     if (articles.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "Aucun article trouvé avec ces critères de recherche",
-        });
+      return res.status(404).json({
+        message: "Aucun article trouvé avec ces critères de recherche",
+      });
     }
 
     res.json(articles);

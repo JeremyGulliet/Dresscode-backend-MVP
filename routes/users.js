@@ -7,6 +7,8 @@ const { checkBody } = require('../modules/bodyCheck')
 const bcrypt = require('bcrypt');
 const uid2 = require('uid2');
 
+
+
 /* Route POST pour le SignUp */
 router.post('/signup', (req, res) => {
   if (!checkBody(req.body, ['username', 'email', 'password'])) {
@@ -53,5 +55,31 @@ router.post('/signin', (req, res) => {
     }
   });
 });
+
+//Route PUT pour mettre à jour les données de l'utilisateur 
+router.put('/:token/:articleID', (req, res) => {
+  const { token, articleID } = req.params;
+
+  User.findOne({ token: token })
+    .then(user => {
+      if (!user) {
+        return res.status(404).send('Utilisateur non trouvé');
+      }
+
+      user.articles.push(articleID); // Ajoute l'ID de l'article à la liste des articles de l'utilisateur
+      return user.save(); // Sauvegarde les modifications de l'utilisateur dans la base de données
+    })
+    .then(updatedUser => {
+      res.json(updatedUser); // Renvoie l'utilisateur mis à jour en réponse
+    })
+    .catch(error => {
+      res.status(500).json({ result: false, error: 'Internal server error' });
+    });
+});
+
+
+
+
+
 
 module.exports = router;
