@@ -6,20 +6,28 @@ const Weather = require("../models/weathers");
 
 /* POST ajout weather par l'utilisateur  */
 router.post("/", (req, res) => {
-  // console.log('req.body');
   const { type, temp_min, temp_max } = req.body;
-
-  const newWeather = new Weather({
-    type,
-    temp_min,
-    temp_max,
-  });
-  newWeather
-    .save()
-    .then((savedWeather) => {
-      res.json({ result: true, newWeather: savedWeather });
+  // Recherche du weather dans la BDD
+  Weather.findOne({ type, temp_min, temp_max })
+    .then(existingWeather => {
+      if (existingWeather) {
+        //si un weather existe
+        res.json({ result: false, existingWeather })
+      } else {
+        const newWeather = new Weather({
+          type,
+          temp_min,
+          temp_max,
+        });
+        newWeather
+          .save()
+          .then((savedWeather) => {
+            res.json({ result: true, newWeather: savedWeather });
+          })
+          .catch((error) => console.error(error));
+      }
     })
-    .catch((error) => console.error(error));
+    .catch(error => console.error(error));
 });
 
 // Route GET pour chercher des configurations de météo
