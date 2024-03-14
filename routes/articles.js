@@ -32,7 +32,6 @@ router.post("/upload", async (req, res) => {
 
 /* POST article complet (photo > url) */
 
-
 router.post("/", (req, res) => {
   const { weather, useDate, favorite, url_image, description, brand } =
     req.body;
@@ -50,7 +49,7 @@ router.post("/", (req, res) => {
       res.json({ result: true, newArticle: savedArticle });
     })
     .catch((error) => console.error(error));
-})
+});
 
 // Route POST pour envoyer les photos importées de la photothèque vers Cloudinary
 
@@ -83,8 +82,8 @@ router.post("/import", async (req, res) => {
 router.get("/dressing/:token", (req, res) => {
   User.findOne({ token: req.params.token })
     .populate({
-      path: 'articles', // Accéder au champ articles de l'utilisateur
-      populate: { path: 'description' } // Accéder au champ description des articles
+      path: "articles", // Accéder au champ articles de l'utilisateur
+      populate: { path: "description" }, // Accéder au champ description des articles
     })
     .populate({
       path: 'articles', // Accéder au champ articles de l'utilisateur
@@ -96,13 +95,13 @@ router.get("/dressing/:token", (req, res) => {
     })
     .then(user => {
       if (!user) {
-        return res.status(404).send('Utilisateur non trouvé');
+        return res.status(404).send("Utilisateur non trouvé");
       }
       res.json(user.articles); // Renvoyer les articles associés à l'utilisateur avec leurs descriptions
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send('Erreur lors de la recherche de l\'utilisateur');
+      res.status(500).send("Erreur lors de la recherche de l'utilisateur");
     });
 });
 
@@ -142,7 +141,7 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
       const weather = await Weather.find(weatherFilter);
       if (weather && weather.length > 0) {
         // Récupérer les IDs des météos correspondantes
-        const weatherIds = weather.map(w => w._id);
+        const weatherIds = weather.map((w) => w._id);
         // Ajouter les IDs dans le filtre des articles
         articleFilter.weather = { $in: weatherIds };
       }
@@ -154,10 +153,9 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
       const descriptions = await Description.find(descriptionFilter);
       if (descriptions && descriptions.length > 0) {
         // Récupérer les IDs des descriptions correspondantes
-        const descriptionIds = descriptions.map(d => d._id);
+        const descriptionIds = descriptions.map((d) => d._id);
         // Ajouter les IDs dans le filtre des articles
         articleFilter.description = { $in: descriptionIds };
-
       }
     }
 
@@ -165,21 +163,17 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
     const articles = await Article.find(articleFilter).populate("description");
 
     if (articles.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "Aucun article trouvé avec ces critères de recherche",
-        });
+      return res.status(404).json({
+        message: "Aucun article trouvé avec ces critères de recherche",
+      });
     }
 
     res.json(articles);
     //console.log(articles)
-
   } catch (error) {
     console.error("Erreur lors de la récupération des articles :", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
-
 
 module.exports = router;
