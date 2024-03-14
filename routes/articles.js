@@ -85,6 +85,14 @@ router.get("/dressing/:token", (req, res) => {
       path: "articles", // Accéder au champ articles de l'utilisateur
       populate: { path: "description" }, // Accéder au champ description des articles
     })
+    .populate({
+      path: "articles", // Accéder au champ articles de l'utilisateur
+      populate: { path: "brand" }, // Accéder au champ brand des articles
+    })
+    .populate({
+      path: "articles", // Accéder au champ articles de l'utilisateur
+      populate: { path: "weather" }, // Accéder au champ weather des articles
+    })
     .then((user) => {
       if (!user) {
         return res.status(404).send("Utilisateur non trouvé");
