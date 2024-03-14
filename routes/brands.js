@@ -23,18 +23,29 @@ router.get("/", async (req, res) => {
 
 /* POST ajout brand par l'utilisateur  */
 router.post("/", (req, res) => {
-  // console.log('req.body');
-  const { name } = req.body;
 
-  const newBrand = new Brand({
-    name,
-  });
-  newBrand
-    .save()
-    .then((savedBrand) => {
-      res.json({ result: true, newBrand: savedBrand });
+  const { name } = req.body;
+  //Recherche de la marque dans la BDD
+  Brand.findOne({ name })
+    .then(existingBrand => {
+      if (existingBrand) {
+        // Si une Brand existe
+        res.json({ result: false, existingBrand });
+      } else {
+        // Si la brand n'existe pas, on la crée
+        const newBrand = new Brand({
+          name,
+        });
+        newBrand
+          .save()
+          .then((savedBrand) => {
+            res.json({ result: true, newBrand: savedBrand });
+          })
+          .catch((error) => console.error(error));
+      }
     })
-    .catch((error) => console.error(error));
+    .catch(error => console.error(error));
+
 });
 
 module.exports = router;

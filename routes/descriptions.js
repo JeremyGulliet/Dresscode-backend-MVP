@@ -7,19 +7,32 @@ const Description = require("../models/descriptions");
 
 router.post("/", (req, res) => {
     const { type, category, size, color, event } = req.body;
-    const newDescription = new Description({
-        type,
-        category,
-        size,
-        color,
-        event,
-    });
-    newDescription
-        .save()
-        .then((savedDescription) => {
-            res.json({ result: true, newDescription: savedDescription });
+
+    // Recherche de la description existante dans la base de données
+    Description.findOne({ type, category, size, color, event })
+        .then(existingDescription => {
+            if (existingDescription) {
+                // Si une description correspondante est trouvée,
+                res.json({ result: false, existingDescription });
+            } else {
+                // Si la description n'existe pas, créez une nouvelle entrée
+                const newDescription = new Description({
+                    type,
+                    category,
+                    size,
+                    color,
+                    event,
+                });
+
+                newDescription
+                    .save()
+                    .then(savedDescription => {
+                        res.json({ result: true, newDescription: savedDescription });
+                    })
+                    .catch(error => console.error(error));
+            }
         })
-        .catch((error) => console.error(error));
+        .catch(error => console.error(error));
 });
 
 // Route GET pour cherche une description

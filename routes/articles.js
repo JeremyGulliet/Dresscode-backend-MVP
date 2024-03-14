@@ -5,6 +5,7 @@ const Description = require("../models/descriptions");
 const Article = require("../models/articles");
 const Weather = require("../models/weathers");
 const User = require("../models/users");
+const Brand = require("../models/brands");
 
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
@@ -75,26 +76,6 @@ router.post("/import", async (req, res) => {
       .status(500)
       .json({ error: "Erreur lors du téléchargement de l'image." });
   }
-});
-
-// Route DELETE pour suppression Cloudinary
-
-router.delete("/deleteImage", async (req, res) => {
-  const { imageUrl } = req.body;
-
-  // Supprimer l'image de Cloudinary en utilisant l'URL imageUrl
-  cloudinary.uploader.destroy(imageUrl, (error, result) => {
-    if (error) {
-      console.error(
-        "Erreur lors de la suppression de l'image de Cloudinary:",
-        error
-      );
-      res.sendStatus(500); // Envoyer une réponse d'erreur au frontend
-    } else {
-      console.log("Image supprimée de Cloudinary avec succès:", result);
-      res.sendStatus(200); // Envoyer une réponse OK au frontend
-    }
-  });
 });
 
 // Route GET pour afficher les articles de l'utilisateur dans le dressing
@@ -180,67 +161,11 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
     }
 
     res.json(articles);
-    console.log("---------------ARTICLES--------------------", articles);
+    //console.log(articles)
   } catch (error) {
     console.error("Erreur lors de la récupération des articles :", error);
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
-
-// Route de test -------------------------------------
-router.get("/test", (req, res) => {
-  // res.json({ message: "Ceci est une réponse JSON de la route /articles" });
-  Article.findOne({ _id: "65e979d6f1fdd777997a1b10" })
-    .populate("weather")
-    .populate("description")
-    .populate("brand")
-    .exec((err, article) => {
-      if (err) {
-        console.error("Error:", err);
-        res.status(500).json({ error: "Internal server error" });
-      } else {
-        if (!article) {
-          res.status(404).json({ error: "Article not found" });
-        } else {
-          res.status(200).json(article);
-        }
-      }
-    });
-});
-
-// Route SEARCH -------------------------------------
-// router.get("/all", (req, res) => {
-//   const { color } = req.query;
-
-//   // Recherche dans la collection 'Description' pour trouver les descriptions correspondant à la requête
-//   Description.find({ color: { $regex: color, $options: "i" } })
-//     .then((descriptions) => {
-//       const descriptionIds = descriptions.map((desc) => desc._id);
-
-//       // Recherche des articles correspondant aux descriptions trouvées
-//       return Article.find({ description: { $in: descriptionIds } });
-//     })
-//     .then((articles) => {
-//       // Renvoi des articles trouvés
-//       res.json({ articles });
-//     })
-//     .catch((error) => {
-//       console.error("Erreur lors de la recherche :", error);
-//       res.status(500).json({ message: "Erreur serveur" });
-//     });
-// });
-
-// // Route de test GET pour renvoyer l'ensemble des articles
-// router.get("/test", (req, res) => {
-//   console.log("Route TEST");
-//   Article.find()
-//     .then((articles) => {
-//       res.json(articles); // Renvoyer les articles sous forme de réponse JSON
-//     })
-//     .catch((error) => {
-//       console.error("Erreur lors de la récupération des articles :", error);
-//       res.status(500).json({ message: "Erreur serveur" });
-//     });
-// });
 
 module.exports = router;
