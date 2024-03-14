@@ -186,4 +186,61 @@ router.get("/dressing/homeArticle/:token", async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 });
+
+// Route de test -------------------------------------
+router.get("/test", (req, res) => {
+  // res.json({ message: "Ceci est une réponse JSON de la route /articles" });
+  Article.findOne({ _id: "65e979d6f1fdd777997a1b10" })
+    .populate("weather")
+    .populate("description")
+    .populate("brand")
+    .exec((err, article) => {
+      if (err) {
+        console.error("Error:", err);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        if (!article) {
+          res.status(404).json({ error: "Article not found" });
+        } else {
+          res.status(200).json(article);
+        }
+      }
+    });
+});
+
+// Route SEARCH -------------------------------------
+// router.get("/all", (req, res) => {
+//   const { color } = req.query;
+
+//   // Recherche dans la collection 'Description' pour trouver les descriptions correspondant à la requête
+//   Description.find({ color: { $regex: color, $options: "i" } })
+//     .then((descriptions) => {
+//       const descriptionIds = descriptions.map((desc) => desc._id);
+
+//       // Recherche des articles correspondant aux descriptions trouvées
+//       return Article.find({ description: { $in: descriptionIds } });
+//     })
+//     .then((articles) => {
+//       // Renvoi des articles trouvés
+//       res.json({ articles });
+//     })
+//     .catch((error) => {
+//       console.error("Erreur lors de la recherche :", error);
+//       res.status(500).json({ message: "Erreur serveur" });
+//     });
+// });
+
+// // Route de test GET pour renvoyer l'ensemble des articles
+// router.get("/test", (req, res) => {
+//   console.log("Route TEST");
+//   Article.find()
+//     .then((articles) => {
+//       res.json(articles); // Renvoyer les articles sous forme de réponse JSON
+//     })
+//     .catch((error) => {
+//       console.error("Erreur lors de la récupération des articles :", error);
+//       res.status(500).json({ message: "Erreur serveur" });
+//     });
+// });
+
 module.exports = router;
